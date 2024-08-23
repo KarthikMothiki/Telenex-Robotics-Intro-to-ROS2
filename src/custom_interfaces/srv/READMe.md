@@ -196,7 +196,7 @@ Source the setup script to overlay your workspace on top of your environment.
 source install/setup.bash
 ```
 
-Step 7: Run the Service and Client
+## Step 7: Run the Service and Client
 In one terminal, start the service node:
 ```
 ros2 run my_pkg server
