@@ -16,4 +16,8 @@ Now build your workspace and source the terminal
 colcon build
 source install/setup.bash
 ```
-### Checkout the ros2 topics and service implementations [here](https://github.com/KarthikMothiki/Telenex-Robotics-Intro-to-ROS2/tree/main/src/my_pkg)
+
+## Tutorials 
+- Checkout the ros2 topics and service implementations [here](https://github.com/KarthikMothiki/Telenex-Robotics-Intro-to-ROS2/tree/main/src/my_pkg)
+- Checkout the tutorial for custom message [here](https://github.com/KarthikMothiki/Telenex-Robotics-Intro-to-ROS2/tree/main/src/custom_interfaces/msg)
+- Checkout the tutorial for custom service [here](https://github.com/KarthikMothiki/Telenex-Robotics-Intro-to-ROS2/tree/main/src/custom_interfaces/srv)
