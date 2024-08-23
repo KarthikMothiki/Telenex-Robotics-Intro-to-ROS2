@@ -1,11 +1,14 @@
 # ROS 2 Humble: Creating and Using Custom messages
 
-This tutorial will create a simple ROS 2 publisher and subscriber using custom message in Python using the ROS 2 Humble distribution. 
+This tutorial will create a simple ROS 2 publisher and subscriber using a custom message in Python using the ROS 2 Humble distribution. 
 ## Prerequisites
 
-- ROS 2 Humble installedhttps://github.com/KarthikMothiki/Telenex-Robotics-Intro-to-ROS2/blob/main/src/custom_interfaces/ReadMe.md
-- Basic understanding of ROS 2 concepts
+- ROS 2 Humble installed
 - Python 3.8 or later
+
+
+### NOTE
+Skip the steps 1 & 2 if you already created the custom_interfaces package and don't forget to change the message definition
 
 ## Step 1: Create a New Package
 
@@ -18,20 +21,18 @@ ros2 pkg create --license Apache-2.0 --build-type ament_cmake custom_interfaces
 
 ## Step 2: Define the Service
 
-Create a new directory for your service definitions.
+Create a new directory for your custom message definitions.
 
 ```bash
-mkdir -p ~/ros2_ws/src/custom_interfaces/srv
+mkdir -p ~/ros2_ws/src/custom_interfaces/msg
 ```
-Inside this directory, create a new file named MyPkgSrv.srv with the following content:
+Inside this directory, create a new file named MyPkgMsg.msg with the following content:
 
 ```
-bool req
----
-builtin_interfaces/Time res
+string message
 ```
 
-This service takes a bool as an input and returns the time. Check the following [link](https://docs.ros2.org/galactic/api/builtin_interfaces/msg/Time.html) for reference
+This message contains a singular string message (You can further add more data types as you need). Check the following [link](https://docs.ros.org/en/noetic/api/std_msgs/html/msg/String.html) for reference
 
 ## Step 3: Update Package Files
 `CmakeLists.txt`
@@ -109,34 +110,33 @@ Update the package.xml to include the build dependencies.
 
 ```
 
-## Step 4: Create the Service Node
-Create a server.py file in the `src/my_pkg/my_pkg` directory.
+## Step 4: Create the Publisher Node
+Create a custom_msg_pub.py file in the `src/my_pkg/my_pkg` directory.
 ```
 import rclpy
 from rclpy.node import Node
-from custom_interfaces.srv import MyPkgSrv  
-from builtin_interfaces.msg import Time
+from custom_interfaces.msg import MyPkgMsg  
 
-class TimeService(Node):
+class CustomPublisher(Node):
 
     def __init__(self):
-        super().__init__('demo_service')
-        self.srv = self.create_service(MyPkgSrv, 'get_time', self.get_time_callback)
-        self.get_logger().info('Time service has been started.')
+        super().__init__('custom_publisher')
+        self.publisher_ = self.create_publisher(MyPkgMsg, 'custom_topic', 10)
+        timer_period = 1.0  # seconds
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.get_logger().info('Custom publisher has been started.')
 
-    def get_time_callback(self, request, response):
-        self.get_logger().info(f'Received request: {request.req}')
-        if request.req:
-            current_time = self.get_clock().now().to_msg()
-            response.res = current_time
-        else:
-            response.res = Time()  # Send zero time as a response if req is False
-        return response
+    def timer_callback(self):
+        msg = MyPkgMsg()
+        msg.message = 'Publishing data using a custom msg'
+        self.publisher_.publish(msg)
+        self.get_logger().info(f'Publishing: "{msg.message}"')
 
 def main(args=None):
     rclpy.init(args=args)
-    time_service = TimeService()
-    rclpy.spin(time_service)
+    custom_publisher = CustomPublisher()
+    rclpy.spin(custom_publisher)
+    custom_publisher.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
@@ -144,42 +144,38 @@ if __name__ == '__main__':
 
 ```
 
-## Step 5: Create the Client Node
-Create a client.py file in the `src/my_pkg/my_pkg` directory.
+## Step 5: Create the Subscriber Node
+Create a custom_msg_sub.py file in the `src/my_pkg/my_pkg` directory.
 ```
 import rclpy
 from rclpy.node import Node
-from custom_interfaces.srv import MyPkgSrv  
+from custom_interfaces.msg import MyPkgMsg  
 
-class TimeClient(Node):
+class CustomSubscriber(Node):
 
     def __init__(self):
-        super().__init__('demo_client')
-        self.client = self.create_client(MyPkgSrv, 'get_time')
-        while not self.client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Waiting for service...')
-        self.get_logger().info('Service is available.')
-        self.request = MyPkgSrv.Request()
+        super().__init__('custom_subscriber')
+        self.subscription = self.create_subscription(
+            MyPkgMsg,
+            'custom_topic',
+            self.listener_callback,
+            10)
+        self.subscription  # Prevent unused variable warning
+        self.get_logger().info('Custom subscriber has been started.')
 
-    def send_request(self):
-        self.request.req = True
-        self.future = self.client.call_async(self.request)
-        rclpy.spin_until_future_complete(self, self.future)
-        return self.future.result()
+    def listener_callback(self, msg):
+        self.get_logger().info(f'Received: "{msg.message}"')
 
 def main(args=None):
     rclpy.init(args=args)
-    time_client = TimeClient()
-    response = time_client.send_request()
-    if response:
-        time = response.res
-        print(f'Received time: {time.sec} seconds and {time.nanosec} nanoseconds')
-    else:
-        print('Service call failed.')
+    custom_subscriber = CustomSubscriber()
+    rclpy.spin(custom_subscriber)
+    custom_subscriber.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
+
 ```
 
 ## Step 6: Build the Package
@@ -198,12 +194,12 @@ source install/setup.bash
 Step 7: Run the Service and Client
 In one terminal, start the service node:
 ```
-ros2 run my_pkg server
+ros2 run my_pkg custom_msg_pub
 ```
 
 In another terminal, start the client node with two integer arguments:
 
 ```
-ros2 run my_pkg client
+ros2 run my_pkg custom_msg_sub
 ```
-You should see the client node send a request to the service node and receive the time in seconds and nanoseconds format.
+
