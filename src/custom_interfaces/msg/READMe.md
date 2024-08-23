@@ -8,7 +8,9 @@ This tutorial will create a simple ROS 2 publisher and subscriber using a custom
 
 
 ### NOTE
-Skip the steps 1 & 2 if you already created the custom_interfaces package and don't forget to change the message definition
+- Skip steps 1 & 2 if you already created the custom_interfaces package and don't forget to change the message definition.
+- Skip the steps 1 through 5 if you installed the package using git
+
 
 ## Step 1: Create a New Package
 
@@ -19,7 +21,7 @@ cd ~/ros2_ws/src
 ros2 pkg create --license Apache-2.0 --build-type ament_cmake custom_interfaces
 ```
 
-## Step 2: Define the Service
+## Step 2: Define the Message
 
 Create a new directory for your custom message definitions.
 
@@ -191,7 +193,7 @@ Source the setup script to overlay your workspace on top of your environment.
 source install/setup.bash
 ```
 
-Step 7: Run the Service and Client
+## Step 7: Run the Service and Client
 In one terminal, start the service node:
 ```
 ros2 run my_pkg custom_msg_pub
