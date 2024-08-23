@@ -24,7 +24,7 @@ Create a new directory for your service definitions.
 ```bash
 mkdir -p ~/ros2_ws/src/custom_interfaces/srv
 ```
-Inside this directory, create a new file named AddTwoInts.srv with the following content:
+Inside this directory, create a new file named MyPkgSrv.srv with the following content:
 
 ```
 bool req
@@ -32,7 +32,7 @@ bool req
 builtin_interfaces/Time res
 ```
 
-This service takes a bool as an input and returns the time.
+This service takes a bool as an input and returns the time. Check the following ![link](https://docs.ros2.org/galactic/api/builtin_interfaces/msg/Time.html) for reference
 
 ## Step 3: Update Package Files
 `CmakeLists.txt`
