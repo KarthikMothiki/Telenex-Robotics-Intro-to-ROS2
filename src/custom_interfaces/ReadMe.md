@@ -32,7 +32,7 @@ bool req
 builtin_interfaces/Time res
 ```
 
-This service takes a bool as an input and returns the time. Check the following ![link](https://docs.ros2.org/galactic/api/builtin_interfaces/msg/Time.html) for reference
+This service takes a bool as an input and returns the time. Check the following [link](https://docs.ros2.org/galactic/api/builtin_interfaces/msg/Time.html) for reference
 
 ## Step 3: Update Package Files
 `CmakeLists.txt`
