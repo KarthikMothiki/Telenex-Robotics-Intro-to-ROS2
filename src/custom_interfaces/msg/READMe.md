@@ -205,3 +205,6 @@ In another terminal, start the client node with two integer arguments:
 ros2 run my_pkg custom_msg_sub
 ```
 
+```
+ros2 topic pub -1 /custom_topic custom_interfaces/msg/MyPkgMsg "{message: 'Hello from terminal'}"
+```
